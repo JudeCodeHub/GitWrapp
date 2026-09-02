@@ -228,6 +228,28 @@ async function handlesubmit (e) {
 
   setStatus("leaving");
   setTimeout (() => setStatus("loading"), 420)
-
+}
+  async function handleDownload() {
+    if(!imageUrl || downloadStatus === "downloading") return;
+    setDownloadStatus("downloading")
   
+  try {
+    const res  =await fetch(imageUrl);
+    if(!res.ok) throw new Error("Download failed")
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a = document.createElement("a")
+    a.href  = url;
+    a.download  =`gitwrapped-${cleanUsername}-${yearsParam}.png`
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setDownloadStatus(downloaded)
+  }catch {
+    setDownloadStatus("idle");
+    setErrorMessage("Download failed, Try again")
+    setStatus("error")
+  }
+
 }
